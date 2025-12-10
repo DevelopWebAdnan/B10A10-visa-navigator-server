@@ -27,7 +27,14 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const visaCollection = client.db('visaDB').collection('allVisas');
 
+    app.post('/allVisas', async(req, res) => {
+      const newVisa = req.body;
+      console.log(newVisa);
+      const result = await visaCollection.insertOne(newVisa);
+      res.send(result);
+    })
 
     
     // Send a ping to confirm a successful connection
