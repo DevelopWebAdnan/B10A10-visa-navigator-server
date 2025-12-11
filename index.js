@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const app = express();
 const port = process.env.PORT || 5000;
 
@@ -29,20 +29,34 @@ async function run() {
 
     const visaCollection = client.db('visaDB').collection('allVisas');
 
-    app.get('/allVisas', async(req, res) => {
+    app.get('/allVisas', async (req, res) => {
       const cursor = visaCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     })
 
-    app.post('/allVisas', async(req, res) => {
+    app.get('/allVisas/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) }
+      const result = await visaCollection.findOne(query);
+      res.send(result);
+    })
+
+    app.post('/allVisas', async (req, res) => {
       const newVisa = req.body;
       console.log(newVisa);
       const result = await visaCollection.insertOne(newVisa);
       res.send(result);
     })
 
-    
+    app.delete('/allVisas/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await visaCollection.deleteOne(query);
+      res.send(result);
+    })
+
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
@@ -55,9 +69,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('VISA NAVIGATOR SERVER IS RUNNING')
+  res.send('VISA NAVIGATOR SERVER IS RUNNING')
 })
 
 app.listen(port, () => {
-    console.log(`Visa navigator is running on port ${port}`)
+  console.log(`Visa navigator is running on port ${port}`)
 });
