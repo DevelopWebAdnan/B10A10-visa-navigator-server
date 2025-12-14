@@ -49,6 +49,29 @@ async function run() {
       res.send(result);
     })
 
+    app.put('/allVisas/:id', async(req, res) => {
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const updatedVisa = req.body;
+      const visa = {
+        $set: {
+         image: updatedVisa.image, 
+         name: updatedVisa.name, 
+         selectedVisa: updatedVisa.selectedVisa, 
+         time: updatedVisa.time, 
+         documents: updatedVisa.documents, 
+         description: updatedVisa.description, 
+         age: updatedVisa.age, 
+         fee: updatedVisa.fee, 
+         validity: updatedVisa.validity, 
+         applicationMethod: updatedVisa.applicationMethod
+        }
+      }
+      const options = { upsert: true };
+      const result = await visaCollection.updateOne(query, visa, options);
+      res.send(result);
+    })
+
     app.delete('/allVisas/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
