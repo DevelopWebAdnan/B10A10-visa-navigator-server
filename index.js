@@ -10,8 +10,6 @@ app.use(cors());
 app.use(express.json());
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.wy5hpga.mongodb.net/?appName=Cluster0`;
-console.log(uri);
-
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -28,6 +26,7 @@ async function run() {
     await client.connect();
 
     const visaCollection = client.db('visaDB').collection('allVisas');
+    const userCollection = client.db('visaDB').collection('users');
 
     app.get('/allVisas', async (req, res) => {
       const cursor = visaCollection.find();
@@ -76,6 +75,15 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await visaCollection.deleteOne(query);
+      res.send(result);
+    })
+
+    // Users related apis
+
+    app.post('/users', async(req, res) => {
+      const newUser = req.body;
+      console.log('New user created: ', newUser);
+      const result = await userCollection.insertOne(newUser);
       res.send(result);
     })
 
