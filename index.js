@@ -25,43 +25,49 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     // await client.connect();
 
-    const addedVisaCollection = client.db('addedVisaDB').collection('addedVisas');
+    const visaCollection = client.db('visaDB').collection('visas');
     const userCollection = client.db('userDB').collection('users');
     const visaApplicationCollection = client.db('visaApplicationDB').collection('visaApplications');
 
-    app.get('/addedVisas', async (req, res) => {
+    app.get('/visas', async (req, res) => {
       // const cursor = visaCollection.find().limit(6);
-      const cursor = addedVisaCollection.find();
+      const cursor = visaCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     })
 
-    app.get('/addedVisas/:id', async (req, res) => {
+    // app.get('/addedVisas/:id', async (req, res) => {
+    app.get('/visas/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
-      const result = await addedVisaCollection.findOne(query);
+      const result = await visaCollection.findOne(query);
       res.send(result);
     })
 
-    // app.get('/visas/:email', async (req, res) => {
-    // app.get('/visas', async (req, res) => {
-      // const email = req.params.email;
-    //   const email = req.body?.email;
-    //   console.log('email from /visas: ', email);
-    //   const query = { email }
-    //   const cursor = visaCollection.find(query);
-    //   const result = await cursor.toArray();
-    //   res.send(result);
-    // })
+    // app.get('/addedVisas/:email', async (req, res) => {
+    app.get('/myVisas/:email', async (req, res) => {
+      // app.get('/myVisas', async (req, res) => {
+      // app.get('/visas', async (req, res) => {
+      const email = req.params.email;
+      // const userEmail = req.body?.userEmail;
+      // const email = req.body?.email;
+      console.log('email from /myVisas/:email: ', email);
+      const query = { email }
+      const cursor = visaCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    })
 
-    app.post('/addedVisas', async (req, res) => {
+    // app.post('/addedVisas', async (req, res) => {
+    app.post('/visas', async (req, res) => {
       const newVisa = req.body;
-      console.log(newVisa);
-      const result = await addedVisaCollection.insertOne(newVisa);
+      console.log('newVisa: ', newVisa);
+      const result = await visaCollection.insertOne(newVisa);
       res.send(result);
     })
 
-    app.put('/addedVisas/:id', async (req, res) => {
+    // app.put('/addedVisas/:id', async (req, res) => {
+    app.put('/visas/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) }
       const updatedVisa = req.body;
@@ -80,34 +86,65 @@ async function run() {
         }
       }
       const options = { upsert: true };
-      const result = await addedVisaCollection.updateOne(query, visa, options);
+      const result = await visaCollection.updateOne(query, visa, options);
       res.send(result);
     })
 
-    app.delete('/addedVisas/:id', async (req, res) => {
+    // app.delete('/addedVisas/:id', async (req, res) => {
+    app.delete('/visas/:id', async (req, res) => {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
-      const result = await addedVisaCollection.deleteOne(query);
+      const result = await visaCollection.deleteOne(query);
       res.send(result);
     })
 
     // Users related apis
+
     app.get('/users', async (req, res) => {
       const cursor = userCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     })
 
+    app.post('/users', async (req, res) => {
+      const newUser = req.body;
+      console.log('New user created: ', newUser);
+      const result = await userCollection.insertOne(newUser);
+      res.send(result);
+    })
+
+    app.patch('/users', async (req, res) => {
+      const email = req.body.email;
+      const filter = { email };
+      const updatedDoc = {
+        $set: {
+          lastSignInTime: req.body?.lastLoginTime
+        }
+      }
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    })
+
     // Users applied visas related apis
+
     app.get('/visaApplications', async (req, res) => {
       const cursor = visaApplicationCollection.find();
       const result = await cursor.toArray();
       res.send(result);
     })
 
+    app.get('/visaApplications/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const cursor = visaApplicationCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
     // app.get('/users/:email', async (req, res) => { 
-    app.get('/visaApplications/:email', async (req, res) => { 
+    app.get('/myVisaApplications/:email', async (req, res) => {
       const email = req.params.email;
+      console.log('email from /myVisaApplications/:email: ', email);
       const query = { email };
       const cursor = visaApplicationCollection.find(query);
       const result = await cursor.toArray();
@@ -116,24 +153,24 @@ async function run() {
 
     // app.post('/users', async (req, res) => {
     app.post('/visaApplications', async (req, res) => {
-      const newUser = req.body;
-      console.log('New user created: ', newUser);
-      const result = await visaApplicationCollection.insertOne(newUser);
+      const newApplication = req.body;
+      console.log('New visa application created: ', newApplication);
+      const result = await visaApplicationCollection.insertOne(newApplication);
       res.send(result);
     })
 
     // app.patch('/users', async (req, res) => {
-    app.patch('/visaApplications', async (req, res) => {
-      const email = req.body.email;
-      const filter = { email };
-      const updatedDoc = {
-        $set: {
-          lastSignInTime: req.body?.lastLoginTime
-        }
-      }
-      const result = await visaApplicationCollection.updateOne(filter, updatedDoc);
-      res.send(result);
-    })
+    // app.patch('/visaApplications', async (req, res) => {
+    //   const email = req.body.email;
+    //   const filter = { email };
+    //   const updatedDoc = {
+    //     $set: {
+    //       lastSignInTime: req.body?.lastLoginTime
+    //     }
+    //   }
+    //   const result = await visaApplicationCollection.updateOne(filter, updatedDoc);
+    //   res.send(result);
+    // })
 
     // app.delete('/users/:id', async (req, res) => {
     app.delete('/visaApplications/:id', async (req, res) => {
