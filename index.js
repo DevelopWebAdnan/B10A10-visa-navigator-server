@@ -74,10 +74,13 @@ async function run() {
       const visa = {
         $set: {
           image: updatedVisa.image,
-          name: updatedVisa.name,
+          countryName: updatedVisa.countryName,
           selectedVisa: updatedVisa.selectedVisa,
           time: updatedVisa.time,
-          documents: updatedVisa.documents,
+          vPassport: updatedVisa.vPassport,
+          vApplicationForm: updatedVisa.vApplicationForm,
+          rPsPhoto: updatedVisa.rPsPhoto,
+          sentence: updatedVisa.sentence,
           description: updatedVisa.description,
           age: updatedVisa.age,
           fee: updatedVisa.fee,
