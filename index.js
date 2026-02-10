@@ -58,6 +58,16 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/allVisas/:visaType', async (req, res) => {
+    // app.get('/allVisas/:selectedVisaType', async (req, res) => {
+      const visaType = req.params.visaType;
+      console.log('visaType from allVisas/:visaType:', visaType);
+      const query = {selectedVisa: visaType}
+      const cursor = visaCollection.find(query);
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
     // app.post('/addedVisas', async (req, res) => {
     app.post('/visas', async (req, res) => {
       const newVisa = req.body;
