@@ -30,8 +30,20 @@ async function run() {
     const visaApplicationCollection = client.db('visaApplicationDB').collection('visaApplications');
 
     app.get('/visas', async (req, res) => {
-      // const cursor = visaCollection.find().limit(6);
+      // const cursor = visaCollection.find().limit(10);
       const cursor = visaCollection.find();
+      // db.users.find().hint({ $natural: -1 })
+      // const cursor = visaCollection.find().hint({ $natural: -1 }).limit(10);
+      const result = await cursor.toArray();
+      res.send(result);
+    })
+
+    app.get('/latestVisas', async (req, res) => {
+      // const cursor = visaCollection.find().limit(10);
+      // const cursor = visaCollection.find();
+      // db.users.find().hint({ $natural: -1 })
+      // const cursor = visaCollection.find().hint({ $natural: -1 }).limit(10);
+      const cursor = visaCollection.find().hint({ $natural: -1 }).limit(6);
       const result = await cursor.toArray();
       res.send(result);
     })
@@ -183,7 +195,7 @@ async function run() {
       // let option = result;
       // option = {countryName: searchParams};
       // option = {countryName: {$regex: searchParams}};
-      if(searchParams) {
+      if (searchParams) {
         // option = { countryName: { $regex: searchParams, $options: "i" } };
         searchQuery = { countryName: { $regex: searchParams, $options: "i" } };
         const searchCursor = visaApplicationCollection.find(searchQuery);
